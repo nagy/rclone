@@ -33,6 +33,10 @@ func (f *File) Attr(ctx context.Context, a *fuse.Attr) (err error) {
 	a.Gid = f.VFS().Opt.GID
 	a.Uid = f.VFS().Opt.UID
 	a.Mode = f.File.Mode() &^ os.ModeAppend
+	// Mark all files as read-only if the whole fs is read-only.
+	if f.fsys.Opt.ReadOnly {
+		a.Mode &= ^os.FileMode(0o200)
+	}
 	a.Size = Size
 	a.Atime = modTime
 	a.Mtime = modTime

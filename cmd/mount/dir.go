@@ -35,6 +35,10 @@ func (d *Dir) Attr(ctx context.Context, a *fuse.Attr) (err error) {
 	a.Gid = d.VFS().Opt.GID
 	a.Uid = d.VFS().Opt.UID
 	a.Mode = d.Mode()
+	// Mark all directories as read-only if the whole fs is read-only.
+	if d.fsys.Opt.ReadOnly {
+		a.Mode &= ^os.FileMode(0o200)
+	}
 	modTime := d.ModTime()
 	a.Atime = modTime
 	a.Mtime = modTime
