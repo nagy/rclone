@@ -145,6 +145,9 @@ func (fsys *FS) stat(node vfs.Node, stat *fuse.Stat_t) (errc int) {
 	//stat.Dev = 1
 	stat.Ino = node.Inode() // FIXME do we need to set the inode number?
 	stat.Mode = getMode(node)
+	if fsys.VFS.Opt.ReadOnly {
+		stat.Mode &= ^uint32(fuse.S_IWUSR)
+	}
 	stat.Nlink = 1
 	stat.Uid = fsys.VFS.Opt.UID
 	stat.Gid = fsys.VFS.Opt.GID
